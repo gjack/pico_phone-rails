@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-07-25
 
 - Add `PicoPhone::Rails::Serializers::PhoneNumberSerializer`, an ActiveJob serializer so a `PhoneNumber` survives being passed directly as a job argument.
 
