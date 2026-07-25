@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - "gemfiles/**/*"
     - "pkg/**/*"
+    - "vendor/**/*"
 
 Style/Documentation:
   Enabled: false
