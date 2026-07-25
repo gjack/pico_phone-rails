@@ -78,6 +78,11 @@ bundle exec appraisal install
 bundle exec appraisal rake
 ```
 
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub — see
+[CONTRIBUTING.md](CONTRIBUTING.md) for setup and guidelines.
+
 ## License
 
 MIT — see [LICENSE.txt](LICENSE.txt).

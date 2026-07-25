@@ -8,6 +8,7 @@ module PicoPhone
     # class macro that rewrites the given attributes to E.164 before validation
     # runs, so validators and persisted data see a consistent format.
     #
+    # @example
     #   class Contact < ApplicationRecord
     #     normalize_phone :phone, region: "US"
     #   end
@@ -15,6 +16,13 @@ module PicoPhone
       extend ActiveSupport::Concern
 
       class_methods do
+        # @!method normalize_phone(*attributes, region: nil)
+        #   Registers a +before_validation+ callback that rewrites each attribute
+        #   to E.164 when it parses as valid, leaving unparseable input untouched
+        #   so a validator can flag it.
+        #   @param attributes [Array<Symbol>] attribute names to normalize
+        #   @param region [String, nil] ISO 3166-1 alpha-2 default region used to interpret national-format input
+        #   @return [void]
         def normalize_phone(*attributes, region: nil)
           before_validation do
             attributes.each do |attribute|
