@@ -1,0 +1,24 @@
+# pico_phone-rails
+
+> Rails integration for the pico_phone gem: an ActiveRecord attribute type, an ActiveModel validator, a before-validation normalizer, and an ActiveJob serializer for phone numbers.
+
+Core API surface:
+
+- `validates :phone, phone: { region:, allow_blank:, possible:, message: }` — `PhoneValidator`, a top-level `ActiveModel::EachValidator` (not namespaced, so ActiveModel's `"#{key.camelize}Validator"` lookup resolves it).
+- `attribute :phone, :phone_number, region: "US"` — `PicoPhone::Rails::Type`, an `ActiveModel::Type::Value` registered as `:phone_number`. Casts a stored string to a `PicoPhone::PhoneNumber` on read, serializes back to E.164 (or the original string, if invalid) on write.
+- `normalize_phone :phone, region: "US"` — `PicoPhone::Rails::Normalizer`, a `before_validation` callback that rewrites the attribute to E.164 when it parses as valid.
+- `MyJob.perform_later(phone: PicoPhone.parse("+15102745656", "US"))` — `PicoPhone::Rails::Serializers::PhoneNumberSerializer`, an `ActiveJob::Serializers::ObjectSerializer` so a `PhoneNumber` survives being passed directly as a job argument.
+
+All four integrations are wired up automatically by `PicoPhone::Rails::Railtie` via `ActiveSupport.on_load` hooks, and stay soft dependencies — the ActiveRecord and ActiveJob pieces only activate if the host app actually loads those Rails components.
+
+## Docs
+
+- [README](https://github.com/gjack/pico_phone-rails/blob/main/README.md): usage examples for every integration
+- [CHANGELOG](https://github.com/gjack/pico_phone-rails/blob/main/CHANGELOG.md): what shipped in each version
+- [Releases](https://github.com/gjack/pico_phone-rails/releases)
+
+## Optional
+
+- [Security policy](https://github.com/gjack/pico_phone-rails/blob/main/SECURITY.md)
+- [Contributing](https://github.com/gjack/pico_phone-rails/blob/main/CONTRIBUTING.md)
+- [pico_phone](https://github.com/gjack/pico_phone): the underlying phone-number parsing/validation/formatting gem this integrates with — `PhoneNumber` objects, `PicoPhone.parse`, and all region/type/formatting semantics are defined there, not in this gem.

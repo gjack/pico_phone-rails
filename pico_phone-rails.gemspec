@@ -8,10 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors = ["Gabi Jack"]
   spec.email = ["gabi@gabijack.com"]
 
-  spec.summary = "Rails integration for pico_phone: attribute type, validator, and normalizer for phone numbers"
+  spec.summary = "Rails integration for pico_phone: attribute type, validator, normalizer, and ActiveJob serializer"
   spec.description = "pico_phone-rails wires the pico_phone gem into Rails: a :phone_number ActiveRecord " \
-                     "attribute type, a PhoneValidator for ActiveModel validations, and a normalize_phone " \
-                     "class macro that rewrites phone attributes to E.164 before validation."
+                     "attribute type, a PhoneValidator for ActiveModel validations, a normalize_phone " \
+                     "class macro that rewrites phone attributes to E.164 before validation, and an " \
+                     "ActiveJob serializer so a PhoneNumber survives being passed as a job argument."
   spec.homepage = "https://github.com/gjack/pico_phone-rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"
@@ -20,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/gjack/pico_phone-rails"
   spec.metadata["changelog_uri"] = "https://github.com/gjack/pico_phone-rails/releases"
   spec.metadata["bug_tracker_uri"] = "https://github.com/gjack/pico_phone-rails/issues"
+  spec.metadata["documentation_uri"] = "https://rubydoc.info/gems/pico_phone-rails"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = [
