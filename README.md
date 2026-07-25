@@ -1,8 +1,8 @@
 # pico_phone-rails
 
 Rails integration for [`pico_phone`](https://github.com/gjack/pico_phone): an
-ActiveRecord attribute type, an ActiveModel validator, and a before-validation
-normalizer for phone numbers.
+ActiveRecord attribute type, an ActiveModel validator, a before-validation
+normalizer, and an ActiveJob serializer for phone numbers.
 
 ## Installation
 
@@ -51,6 +51,17 @@ end
 A `before_validation` callback that rewrites the column to E.164 when it parses
 as valid, so formatting noise ("(510) 274-5656") is stripped before the
 validator runs. Pairs naturally with the validator above.
+
+### ActiveJob serializer
+
+```ruby
+MyJob.perform_later(phone: PicoPhone.parse("+15102745656", "US"))
+```
+
+A `PicoPhone::PhoneNumber` passed as a job argument survives the round trip
+through your queue backend (Sidekiq, Solid Queue, GoodJob, etc.) without
+manually converting to/from a string — `perform` receives back a real
+`PhoneNumber`, not the E.164 string it was serialized as.
 
 ## Development
 
