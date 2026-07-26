@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
     "lib/pico_phone/rails/version.rb",
     "lib/pico_phone/rails/type.rb",
     "lib/pico_phone/rails/normalizer.rb",
+    "lib/pico_phone/rails/extraction.rb",
     "lib/pico_phone/rails/railtie.rb",
     "lib/pico_phone/rails/serializers/phone_number_serializer.rb",
     "lib/pico_phone/rails/locale/en.yml",
