@@ -27,13 +27,22 @@ Gem::Specification.new do |spec|
   spec.files = [
     "lib/pico_phone/rails.rb",
     "lib/pico_phone/rails/version.rb",
+    "lib/pico_phone/rails/region_resolution.rb",
     "lib/pico_phone/rails/type.rb",
     "lib/pico_phone/rails/normalizer.rb",
     "lib/pico_phone/rails/extraction.rb",
+    "lib/pico_phone/rails/extracted_phone_number.rb",
+    "lib/pico_phone/rails/phone_search_index.rb",
     "lib/pico_phone/rails/railtie.rb",
     "lib/pico_phone/rails/serializers/phone_number_serializer.rb",
     "lib/pico_phone/rails/locale/en.yml",
     "lib/phone_validator.rb",
+    "lib/generators/pico_phone/rails/extracted_phone_numbers/extracted_phone_numbers_generator.rb",
+    "lib/generators/pico_phone/rails/extracted_phone_numbers/templates/" \
+    "create_pico_phone_rails_extracted_phone_numbers.rb.tt",
+    "lib/generators/pico_phone/rails/phone_number/phone_number_generator.rb",
+    "lib/generators/pico_phone/rails/phone_number/templates/create_table.rb.tt",
+    "lib/generators/pico_phone/rails/phone_number/templates/model.rb.tt",
     "LICENSE.txt",
     "README.md"
   ]
