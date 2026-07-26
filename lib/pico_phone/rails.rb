@@ -5,6 +5,7 @@ require "pico_phone/rails/version"
 require "phone_validator"
 require "pico_phone/rails/type"
 require "pico_phone/rails/normalizer"
+require "pico_phone/rails/extraction"
 require "pico_phone/rails/railtie" if defined?(Rails::Railtie)
 
 module PicoPhone
