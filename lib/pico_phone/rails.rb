@@ -14,4 +14,5 @@ require "pico_phone/rails/region_resolution"
 require "pico_phone/rails/type"
 require "pico_phone/rails/normalizer"
 require "pico_phone/rails/extraction"
+require "pico_phone/rails/phone_search_index"
 require "pico_phone/rails/railtie" if defined?(Rails::Railtie)
