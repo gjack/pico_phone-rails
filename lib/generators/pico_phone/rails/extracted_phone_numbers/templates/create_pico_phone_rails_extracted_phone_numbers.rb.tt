@@ -1,0 +1,24 @@
+class CreatePicoPhoneRailsExtractedPhoneNumbers < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def change
+    create_table :pico_phone_rails_extracted_phone_numbers do |t|
+      t.references :extractable, polymorphic: true, null: false
+      t.string :source_attribute, null: false
+      t.string :region, null: false
+      t.string :e164, null: false
+      t.string :national_digits, null: false
+      t.string :raw_string, null: false
+      t.integer :start_offset, null: false
+      t.integer :end_offset, null: false
+
+      t.timestamps
+    end
+
+    # Explicit short names: the table name is long enough that the default
+    # generated name for the national_digits index exceeds the 64-character
+    # limit some databases (MySQL) and Rails versions enforce.
+    add_index :pico_phone_rails_extracted_phone_numbers, :e164,
+              name: "index_pico_phone_extracted_phone_numbers_on_e164"
+    add_index :pico_phone_rails_extracted_phone_numbers, :national_digits,
+              name: "index_pico_phone_extracted_phone_numbers_on_national_digits"
+  end
+end

@@ -17,6 +17,19 @@ module PicoPhone
         end
       end
 
+      initializer "pico_phone_rails.extraction" do
+        ActiveSupport.on_load(:active_record) do
+          require "pico_phone/rails/extracted_phone_number"
+          include PicoPhone::Rails::Extraction
+        end
+      end
+
+      initializer "pico_phone_rails.phone_search_index" do
+        ActiveSupport.on_load(:active_record) do
+          include PicoPhone::Rails::PhoneSearchIndex
+        end
+      end
+
       initializer "pico_phone_rails.active_job_serializer" do
         ActiveSupport.on_load(:active_job) do
           require "pico_phone/rails/serializers/phone_number_serializer"

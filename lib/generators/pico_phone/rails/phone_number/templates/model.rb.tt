@@ -1,0 +1,11 @@
+class <%= class_name %> < ApplicationRecord
+  maintain_phone_search_index :number,
+                               region: "US", # TODO: set your app's region -- a String, a Symbol
+                                             # (instance method name), or a Proc, see the README
+                               columns: {
+                                 e164: :e164,
+                                 national_digits: :national_digits,
+                                 reversed_digits: :reversed_digits,
+                                 region: :region
+                               }
+end
