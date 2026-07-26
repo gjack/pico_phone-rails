@@ -14,6 +14,7 @@ require "pico_phone/rails/serializers/phone_number_serializer"
 # initializers never run. Wire up the same pieces they would register.
 ActiveRecord::Type.register(:phone_number, PicoPhone::Rails::Type)
 ActiveRecord::Base.include(PicoPhone::Rails::Normalizer)
+ActiveRecord::Base.include(PicoPhone::Rails::Extraction)
 ActiveJob::Serializers.add_serializers(PicoPhone::Rails::Serializers::PhoneNumberSerializer)
 I18n.load_path << File.expand_path("../lib/pico_phone/rails/locale/en.yml", __dir__)
 I18n.backend.load_translations
@@ -24,6 +25,10 @@ ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define do
   create_table :contacts, force: true do |t|
     t.string :phone
+  end
+
+  create_table :notes, force: true do |t|
+    t.text :body
   end
 end
 
