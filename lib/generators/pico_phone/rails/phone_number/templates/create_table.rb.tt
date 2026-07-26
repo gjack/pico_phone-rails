@@ -1,0 +1,17 @@
+class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def change
+    create_table :<%= table_name %> do |t|
+      t.string :number
+      t.string :e164
+      t.string :national_digits
+      t.string :reversed_digits
+      t.string :region
+
+      t.timestamps
+    end
+
+    add_index :<%= table_name %>, :e164
+    add_index :<%= table_name %>, :national_digits
+    add_index :<%= table_name %>, :reversed_digits
+  end
+end
