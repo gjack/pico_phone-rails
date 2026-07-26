@@ -8,10 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors = ["Gabi Jack"]
   spec.email = ["gabi@gabijack.com"]
 
-  spec.summary = "Rails integration for pico_phone: attribute type, validator, normalizer, and ActiveJob serializer"
+  spec.summary = "Rails integration for pico_phone: attribute type, validator, normalizer, " \
+                 "free-text extraction, phone search index, and ActiveJob serializer"
   spec.description = "pico_phone-rails wires the pico_phone gem into Rails: a :phone_number ActiveRecord " \
                      "attribute type, a PhoneValidator for ActiveModel validations, a normalize_phone " \
-                     "class macro that rewrites phone attributes to E.164 before validation, and an " \
+                     "class macro that rewrites phone attributes to E.164 before validation, " \
+                     "extract_phone_numbers_from for pulling phone numbers out of free text (with an " \
+                     "optional persisted backend for cross-record search), maintain_phone_search_index " \
+                     "for keeping search columns in sync on an existing phone-number table, and an " \
                      "ActiveJob serializer so a PhoneNumber survives being passed as a job argument."
   spec.homepage = "https://github.com/gjack/pico_phone-rails"
   spec.license = "MIT"
