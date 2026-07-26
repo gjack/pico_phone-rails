@@ -19,6 +19,7 @@ module PicoPhone
 
       initializer "pico_phone_rails.extraction" do
         ActiveSupport.on_load(:active_record) do
+          require "pico_phone/rails/extracted_phone_number"
           include PicoPhone::Rails::Extraction
         end
       end
