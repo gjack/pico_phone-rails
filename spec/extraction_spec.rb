@@ -58,6 +58,34 @@ RSpec.describe PicoPhone::Rails::Extraction do
       expect(note.body_with_phones_redacted).to eq("")
     end
   end
+
+  describe "region: as a Symbol or Proc, resolved per record" do
+    it "resolves a Symbol as an instance method call" do
+      dynamic_model_class = Class.new(ActiveRecord::Base) do
+        self.table_name = "notes"
+        extract_phone_numbers_from :body, region: :region_for_phone_parsing
+
+        def region_for_phone_parsing
+          region_code
+        end
+      end
+
+      note = dynamic_model_class.new(body: "01 23 45 67 89", region_code: "FR")
+
+      expect(note.extracted_phone_numbers.first.number.e164).to eq("+33123456789")
+    end
+
+    it "resolves a Proc by calling it with the record" do
+      dynamic_model_class = Class.new(ActiveRecord::Base) do
+        self.table_name = "notes"
+        extract_phone_numbers_from :body, region: lambda(&:region_code)
+      end
+
+      note = dynamic_model_class.new(body: "01 23 45 67 89", region_code: "FR")
+
+      expect(note.extracted_phone_numbers.first.number.e164).to eq("+33123456789")
+    end
+  end
 end
 
 RSpec.describe "PicoPhone::Rails.extract_phone_numbers" do

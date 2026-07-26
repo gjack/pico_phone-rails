@@ -9,12 +9,14 @@ require "active_job"
 require "active_job/base"
 require "pico_phone/rails"
 require "pico_phone/rails/serializers/phone_number_serializer"
+require "pico_phone/rails/extracted_phone_number"
 
 # Specs don't boot a full Rails::Application, so PicoPhone::Rails::Railtie's
 # initializers never run. Wire up the same pieces they would register.
 ActiveRecord::Type.register(:phone_number, PicoPhone::Rails::Type)
 ActiveRecord::Base.include(PicoPhone::Rails::Normalizer)
 ActiveRecord::Base.include(PicoPhone::Rails::Extraction)
+ActiveRecord::Base.include(PicoPhone::Rails::PhoneSearchIndex)
 ActiveJob::Serializers.add_serializers(PicoPhone::Rails::Serializers::PhoneNumberSerializer)
 I18n.load_path << File.expand_path("../lib/pico_phone/rails/locale/en.yml", __dir__)
 I18n.backend.load_translations
@@ -29,6 +31,32 @@ ActiveRecord::Schema.define do
 
   create_table :notes, force: true do |t|
     t.text :body
+    t.text :subject
+    t.string :region_code
+  end
+
+  create_table :pico_phone_rails_extracted_phone_numbers, force: true do |t|
+    t.references :extractable, polymorphic: true, null: false
+    t.string :source_attribute, null: false
+    t.string :region, null: false
+    t.string :e164, null: false
+    t.string :national_digits, null: false
+    t.string :raw_string, null: false
+    t.integer :start_offset, null: false
+    t.integer :end_offset, null: false
+    t.timestamps
+  end
+  add_index :pico_phone_rails_extracted_phone_numbers, :e164
+  add_index :pico_phone_rails_extracted_phone_numbers, :national_digits
+
+  create_table :phone_numbers, force: true do |t|
+    t.string :number
+    t.string :location
+    t.string :region_code
+    t.string :e164
+    t.string :national_digits
+    t.string :reverse_index
+    t.string :region
   end
 end
 
@@ -39,5 +67,15 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  # The sqlite connection (and its in-memory database) is shared across the
+  # whole suite, so persisted-extraction specs that actually save records
+  # would otherwise leak rows into later examples.
+  config.around do |example|
+    ActiveRecord::Base.transaction(requires_new: true) do
+      example.run
+      raise ActiveRecord::Rollback
+    end
   end
 end
