@@ -46,8 +46,13 @@ ActiveRecord::Schema.define do
     t.integer :end_offset, null: false
     t.timestamps
   end
-  add_index :pico_phone_rails_extracted_phone_numbers, :e164
-  add_index :pico_phone_rails_extracted_phone_numbers, :national_digits
+  # Explicit short names: the default generated name ("index_..._on_national_digits")
+  # exceeds the 64-character limit Rails 7.0's sqlite3 adapter enforces, given
+  # how long this table's name already is.
+  add_index :pico_phone_rails_extracted_phone_numbers, :e164,
+            name: "index_pico_phone_extracted_phone_numbers_on_e164"
+  add_index :pico_phone_rails_extracted_phone_numbers, :national_digits,
+            name: "index_pico_phone_extracted_phone_numbers_on_national_digits"
 
   create_table :phone_numbers, force: true do |t|
     t.string :number

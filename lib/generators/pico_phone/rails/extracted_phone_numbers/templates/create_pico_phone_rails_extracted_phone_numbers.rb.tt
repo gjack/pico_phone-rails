@@ -13,7 +13,12 @@ class CreatePicoPhoneRailsExtractedPhoneNumbers < ActiveRecord::Migration[<%= Ac
       t.timestamps
     end
 
-    add_index :pico_phone_rails_extracted_phone_numbers, :e164
-    add_index :pico_phone_rails_extracted_phone_numbers, :national_digits
+    # Explicit short names: the table name is long enough that the default
+    # generated name for the national_digits index exceeds the 64-character
+    # limit some databases (MySQL) and Rails versions enforce.
+    add_index :pico_phone_rails_extracted_phone_numbers, :e164,
+              name: "index_pico_phone_extracted_phone_numbers_on_e164"
+    add_index :pico_phone_rails_extracted_phone_numbers, :national_digits,
+              name: "index_pico_phone_extracted_phone_numbers_on_national_digits"
   end
 end
