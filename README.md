@@ -2,7 +2,8 @@
 
 Rails integration for [`pico_phone`](https://github.com/gjack/pico_phone): an
 ActiveRecord attribute type, an ActiveModel validator, a before-validation
-normalizer, and an ActiveJob serializer for phone numbers.
+normalizer, free-text phone number extraction, and an ActiveJob serializer
+for phone numbers.
 
 ## Installation
 
@@ -51,6 +52,26 @@ end
 A `before_validation` callback that rewrites the column to E.164 when it parses
 as valid, so formatting noise ("(510) 274-5656") is stripped before the
 validator runs. Pairs naturally with the validator above.
+
+### Extraction
+
+```ruby
+class Note < ApplicationRecord
+  extract_phone_numbers_from :body, region: "US"
+end
+
+note.extracted_phone_numbers    # => [#<PicoPhone::PhoneNumberMatch ...>, ...]
+note.body_with_phones_redacted  # => "Call me at [PHONE] or [PHONE]"
+```
+
+Scans a free-text column (notes, support tickets, chat logs) for phone
+numbers of any format. Both methods re-scan the column live -- nothing is
+persisted. Works without a model too:
+
+```ruby
+PicoPhone::Rails.extract_phone_numbers(text, region: "US")
+PicoPhone::Rails.redact_phone_numbers(text, region: "US", replacement: "[PHONE]")
+```
 
 ### ActiveJob serializer
 
