@@ -7,9 +7,11 @@ require "active_job"
 # until ActiveJob::Base is. A real app loads Base during Rails boot; specs
 # have to trigger it explicitly.
 require "active_job/base"
+require "action_view"
 require "pico_phone/rails"
 require "pico_phone/rails/serializers/phone_number_serializer"
 require "pico_phone/rails/extracted_phone_number"
+require "pico_phone/rails/form_helper"
 
 # Specs don't boot a full Rails::Application, so PicoPhone::Rails::Railtie's
 # initializers never run. Wire up the same pieces they would register.
@@ -18,6 +20,8 @@ ActiveRecord::Base.include(PicoPhone::Rails::Normalizer)
 ActiveRecord::Base.include(PicoPhone::Rails::Extraction)
 ActiveRecord::Base.include(PicoPhone::Rails::PhoneSearchIndex)
 ActiveJob::Serializers.add_serializers(PicoPhone::Rails::Serializers::PhoneNumberSerializer)
+ActionView::Base.include(PicoPhone::Rails::FormHelper)
+ActionView::Helpers::FormBuilder.include(PicoPhone::Rails::FormBuilderExtension)
 I18n.load_path << File.expand_path("../lib/pico_phone/rails/locale/en.yml", __dir__)
 I18n.backend.load_translations
 
