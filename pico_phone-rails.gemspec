@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
     "lib/pico_phone/rails/extraction.rb",
     "lib/pico_phone/rails/extracted_phone_number.rb",
     "lib/pico_phone/rails/phone_search_index.rb",
+    "lib/pico_phone/rails/form_helper.rb",
     "lib/pico_phone/rails/railtie.rb",
     "lib/pico_phone/rails/serializers/phone_number_serializer.rb",
     "lib/pico_phone/rails/locale/en.yml",
