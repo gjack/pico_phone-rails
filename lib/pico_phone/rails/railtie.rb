@@ -37,6 +37,14 @@ module PicoPhone
         end
       end
 
+      initializer "pico_phone_rails.form_helper" do
+        ActiveSupport.on_load(:action_view) do
+          require "pico_phone/rails/form_helper"
+          include PicoPhone::Rails::FormHelper
+          ::ActionView::Helpers::FormBuilder.include PicoPhone::Rails::FormBuilderExtension
+        end
+      end
+
       initializer "pico_phone_rails.i18n" do |app|
         app.config.i18n.load_path += Dir[File.expand_path("locale/*.yml", __dir__)]
       end

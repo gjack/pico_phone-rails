@@ -181,6 +181,31 @@ reasoning as `containing_phone_number` above.
 every model, so identical names would collide and one would silently shadow
 the other.)
 
+### Form field helper
+
+```ruby
+<%= pico_phone_field_tag :phone, @contact.phone, region: "US" %>
+<%= f.pico_phone_field :phone, region: "US" %>
+```
+
+Renders an `<input type="tel">` showing the number in national format when
+it parses validly, or exactly what the user typed otherwise -- so re-editing
+an invalid or partial number never shows a blank or garbled reformat. Works
+whether the attribute is a plain string or already a `PicoPhone::PhoneNumber`
+(via the attribute type above), and accepts `region:` as a String, Symbol
+(instance method on the form's object), or Proc, same resolution rules as
+extraction and the search index:
+
+```ruby
+f.pico_phone_field :phone, region: ->(contact) { contact.organization.region }
+```
+
+Named `pico_phone_field`/`pico_phone_field_tag` rather than Rails' own
+`phone_field`/`f.phone_field` (an existing core alias for `telephone_field`,
+a plain `<input type="tel">` with no formatting) -- redefining a core Rails
+helper would silently change behavior for every `phone_field` call in an
+app, not just ones backed by a PicoPhone-managed attribute.
+
 ### ActiveJob serializer
 
 ```ruby
