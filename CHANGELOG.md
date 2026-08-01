@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-07-26
+
+- Add `pico_phone_field_tag`/`f.pico_phone_field`, a form helper that renders an `<input type="tel">` showing the number in national format when it parses validly, or exactly what the user typed otherwise. `region:` accepts a String, Symbol (instance method on the form's object), or Proc (called with the object), same resolution as `extract_phone_numbers_from`/`maintain_phone_search_index`. Named distinctly from Rails' own `phone_field`/`f.phone_field` (a core alias for `telephone_field`) rather than overriding it.
+
 ## 0.3.0 - 2026-07-26
 
 - Add `extract_phone_numbers_from`, a concern that scans a free-text column (notes, support tickets, chat logs) for phone numbers, exposing `#extracted_phone_numbers` (live `PhoneNumberMatch` array) and `#<attribute>_with_phones_redacted`. Also available standalone via `PicoPhone::Rails.extract_phone_numbers`/`.redact_phone_numbers`, no ActiveRecord model required.
