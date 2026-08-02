@@ -9,4 +9,11 @@ require "combustion"
 # be defined before Combustion boots the internal app.
 require "pico_phone/rails/engine"
 
-Combustion.initialize! :action_controller, :action_view
+# Combustion disables both by default; a real host app has them on, which is
+# what actually makes skip_forgery_protection meaningful to test. Must be set
+# here (not by calling protect_from_forgery after boot) so it's in place
+# before the engine's own skip_forgery_protection initializer runs.
+Combustion.initialize! :action_controller, :action_view do
+  config.action_controller.default_protect_from_forgery = true
+  config.action_controller.allow_forgery_protection = true
+end

@@ -5,13 +5,8 @@ require "action_controller"
 module PicoPhone
   module Rails
     # `region:` always arrives as an already-resolved String -- no record lookup.
-    # No state changes here (no session, no persistence), so nothing for CSRF
-    # to protect -- explicit skip_forgery_protection rather than relying on
-    # ActionController::API's structural absence of the module, so a scanner
-    # (or a future reader) sees a deliberate choice, not an omission.
+    # skip_forgery_protection is applied by Engine, not here (see its comment).
     class ValidationsController < ActionController::Base
-      skip_forgery_protection
-
       def validate
         phone = params[:phone].to_s
         return render json: { valid: false, blank: true } if phone.strip.empty?
