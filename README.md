@@ -206,6 +206,27 @@ a plain `<input type="tel">` with no formatting) -- redefining a core Rails
 helper would silently change behavior for every `phone_field` call in an
 app, not just ones backed by a PicoPhone-managed attribute.
 
+### Live validation
+
+```ruby
+# config/routes.rb
+mount PicoPhone::Rails::Engine, at: "/pico_phone"
+```
+
+```ruby
+<%= f.pico_phone_field :phone, region: "US", live: true %>
+```
+
+Once the engine is mounted, `live: true` on either form helper wires the
+field up to a Stimulus controller that debounces input and POSTs to the
+mounted engine, showing an inline error in any element with
+`data-phone-target="error"` while the user types. It never rewrites the
+field's value while it has focus -- only on blur, reformatted to national
+format if what's there parses validly, the same reformat-on-blur behavior
+as the plain (non-`live`) helper. Ships as a plain ES module, auto-pinned
+into `importmap-rails` when present -- no build step, no hard Turbo/Stimulus
+dependency.
+
 ### ActiveJob serializer
 
 ```ruby
