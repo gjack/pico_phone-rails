@@ -5,8 +5,14 @@ require_relative "support/combustion"
 RSpec.describe PicoPhone::Rails::Engine do
   subject(:session) { ActionDispatch::Integration::Session.new(Combustion::Application) }
 
+  # Mirrors what phone_controller.js does: reads the CSRF token off the page
+  # (rendering any page establishes one) and sends it as X-CSRF-Token.
   def post_validate(params)
-    session.post("/pico_phone/validate", params: params)
+    session.get("/live_field")
+    token = session.response.body[/name="csrf-token" content="([^"]+)"/, 1]
+
+    session.post("/pico_phone/validate", params: params.to_json,
+                                         headers: { "Content-Type" => "application/json", "X-CSRF-Token" => token })
     JSON.parse(session.response.body)
   end
 

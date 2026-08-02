@@ -21,13 +21,6 @@ module PicoPhone
         app.config.importmap.paths << Pathname.new(__dir__).join("javascript.rb")
         app.config.importmap.cache_sweepers << Pathname.new(__dir__).join("javascript")
       end
-
-      # Can't call skip_forgery_protection in the class body -- that runs during
-      # Bundler.require, before the app-wide CSRF default (which it needs to
-      # skip) is applied. Ordered after the initializer that applies it instead.
-      initializer "pico_phone_rails.skip_forgery_protection", after: "action_controller.request_forgery_protection" do
-        ValidationsController.skip_forgery_protection
-      end
     end
   end
 end

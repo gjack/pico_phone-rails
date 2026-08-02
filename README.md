@@ -243,6 +243,11 @@ focus -- only on blur, reformatted to national format if what's there
 parses validly, the same reformat-on-blur behavior as the plain
 (non-`live`) helper.
 
+`ValidationsController` uses your app's normal CSRF protection -- the
+controller reads the token from the page's `<meta name="csrf-token">`
+(rendered by Rails' own `csrf_meta_tags`, already in any standard layout)
+and sends it with every request, no extra setup needed.
+
 ### ActiveJob serializer
 
 ```ruby

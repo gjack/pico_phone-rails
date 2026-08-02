@@ -2,7 +2,8 @@
 
 class LiveFieldController < ActionController::Base
   def show
-    render inline: "<%= pico_phone_field_tag(:phone, params[:value], region: params[:region], live: true) %>"
+    render inline: "<%= pico_phone_field_tag(:phone, params[:value], region: params[:region], live: true) %>",
+           layout: "application"
   end
 
   def show_with_data_override

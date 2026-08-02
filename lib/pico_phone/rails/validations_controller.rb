@@ -5,7 +5,6 @@ require "action_controller"
 module PicoPhone
   module Rails
     # `region:` always arrives as an already-resolved String -- no record lookup.
-    # skip_forgery_protection is applied by Engine, not here (see its comment).
     class ValidationsController < ActionController::Base
       def validate
         phone = params[:phone].to_s
