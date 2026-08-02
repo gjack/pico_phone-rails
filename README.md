@@ -208,24 +208,40 @@ app, not just ones backed by a PicoPhone-managed attribute.
 
 ### Live validation
 
+Mount the engine:
+
 ```ruby
 # config/routes.rb
 mount PicoPhone::Rails::Engine, at: "/pico_phone"
 ```
 
-```ruby
-<%= f.pico_phone_field :phone, region: "US", live: true %>
+The controller is auto-pinned into `importmap-rails` when present, but
+still needs to be registered with your Stimulus application -- pinning
+only makes it importable, the same as any other pinned module:
+
+```js
+// app/javascript/controllers/index.js
+import { application } from "controllers/application"
+import PhoneController from "pico_phone/rails/phone_controller"
+application.register("phone", PhoneController)
 ```
 
-Once the engine is mounted, `live: true` on either form helper wires the
-field up to a Stimulus controller that debounces input and POSTs to the
-mounted engine, showing an inline error in any element with
-`data-phone-target="error"` while the user types. It never rewrites the
-field's value while it has focus -- only on blur, reformatted to national
-format if what's there parses validly, the same reformat-on-blur behavior
-as the plain (non-`live`) helper. Ships as a plain ES module, auto-pinned
-into `importmap-rails` when present -- no build step, no hard Turbo/Stimulus
-dependency.
+Then opt in per field:
+
+```ruby
+<%= f.pico_phone_field :phone, region: "US", live: true %>
+<span data-phone-target="error"></span>
+```
+
+Debounces input and POSTs to the mounted engine, showing the error message
+in a sibling `data-phone-target="error"` element (anywhere under the same
+parent as the field -- `data-controller` sits on the `<input>` itself,
+which can't have descendants, so the target is found via the field's
+parent rather than Stimulus's usual descendant-scoped target lookup)
+while the user types. Never rewrites the field's value while it has
+focus -- only on blur, reformatted to national format if what's there
+parses validly, the same reformat-on-blur behavior as the plain
+(non-`live`) helper.
 
 ### ActiveJob serializer
 
