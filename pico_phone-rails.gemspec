@@ -41,6 +41,8 @@ Gem::Specification.new do |spec|
     "lib/pico_phone/rails/railtie.rb",
     "lib/pico_phone/rails/engine.rb",
     "lib/pico_phone/rails/validations_controller.rb",
+    "lib/pico_phone/rails/javascript.rb",
+    "lib/pico_phone/rails/javascript/pico_phone/rails/phone_controller.js",
     "config/routes.rb",
     "lib/pico_phone/rails/serializers/phone_number_serializer.rb",
     "lib/pico_phone/rails/locale/en.yml",
