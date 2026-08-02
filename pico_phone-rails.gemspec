@@ -9,14 +9,19 @@ Gem::Specification.new do |spec|
   spec.email = ["gabi@gabijack.com"]
 
   spec.summary = "Rails integration for pico_phone: attribute type, validator, normalizer, " \
-                 "free-text extraction, phone search index, and ActiveJob serializer"
+                 "free-text extraction, phone search index, form field helpers, live validation, " \
+                 "and ActiveJob serializer"
   spec.description = "pico_phone-rails wires the pico_phone gem into Rails: a :phone_number ActiveRecord " \
                      "attribute type, a PhoneValidator for ActiveModel validations, a normalize_phone " \
                      "class macro that rewrites phone attributes to E.164 before validation, " \
                      "extract_phone_numbers_from for pulling phone numbers out of free text (with an " \
                      "optional persisted backend for cross-record search), maintain_phone_search_index " \
-                     "for keeping search columns in sync on an existing phone-number table, and an " \
-                     "ActiveJob serializer so a PhoneNumber survives being passed as a job argument."
+                     "for keeping search columns in sync on an existing phone-number table, " \
+                     "pico_phone_field_tag/f.pico_phone_field form helpers that display national " \
+                     "format for a valid number without discarding what the user typed, live: true " \
+                     "on those same helpers for debounced Stimulus-driven validation and reformatting " \
+                     "via a mountable engine, and an ActiveJob serializer so a PhoneNumber survives " \
+                     "being passed as a job argument."
   spec.homepage = "https://github.com/gjack/pico_phone-rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"

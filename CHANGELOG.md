@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 - 2026-08-02
+
+- Add live phone-field validation: mount `PicoPhone::Rails::Engine` and pass `live: true` to `pico_phone_field_tag`/`f.pico_phone_field` for a Stimulus controller that debounces input, shows an inline error via a JSON endpoint, and reformats the field to national format on blur. Ships as a plain ES module, auto-pinned into `importmap-rails` when present -- no build step, no hard Turbo/Stimulus dependency. Uses the host app's normal CSRF protection; the controller reads the token from the page and sends it with every request.
+
 ## 0.4.0 - 2026-07-26
 
 - Add `pico_phone_field_tag`/`f.pico_phone_field`, a form helper that renders an `<input type="tel">` showing the number in national format when it parses validly, or exactly what the user typed otherwise. `region:` accepts a String, Symbol (instance method on the form's object), or Proc (called with the object), same resolution as `extract_phone_numbers_from`/`maintain_phone_search_index`. Named distinctly from Rails' own `phone_field`/`f.phone_field` (a core alias for `telephone_field`) rather than overriding it.
