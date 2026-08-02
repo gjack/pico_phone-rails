@@ -102,13 +102,13 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
-    pico_phone (0.6.2)
+    pico_phone (0.6.3)
       rice (~> 4.3)
-    pico_phone (0.6.2-aarch64-linux)
+    pico_phone (0.6.3-aarch64-linux)
       rice (~> 4.3)
-    pico_phone (0.6.2-arm64-darwin)
+    pico_phone (0.6.3-arm64-darwin)
       rice (~> 4.3)
-    pico_phone (0.6.2-x86_64-linux)
+    pico_phone (0.6.3-x86_64-linux)
       rice (~> 4.3)
     pp (0.6.4)
       prettyprint
