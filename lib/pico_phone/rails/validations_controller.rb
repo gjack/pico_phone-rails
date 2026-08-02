@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
-require "action_controller/api"
+require "action_controller"
 
 module PicoPhone
   module Rails
-    # Backs `live: true` on {FormHelper#pico_phone_field_tag}/{FormBuilderExtension#pico_phone_field}.
-    # `ActionController::API` since there's no session/view/CSRF concern here.
     # `region:` always arrives as an already-resolved String -- no record lookup.
-    class ValidationsController < ActionController::API
+    # No state changes here (no session, no persistence), so nothing for CSRF
+    # to protect -- explicit skip_forgery_protection rather than relying on
+    # ActionController::API's structural absence of the module, so a scanner
+    # (or a future reader) sees a deliberate choice, not an omission.
+    class ValidationsController < ActionController::Base
+      skip_forgery_protection
+
       def validate
         phone = params[:phone].to_s
         return render json: { valid: false, blank: true } if phone.strip.empty?
