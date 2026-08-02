@@ -206,6 +206,48 @@ a plain `<input type="tel">` with no formatting) -- redefining a core Rails
 helper would silently change behavior for every `phone_field` call in an
 app, not just ones backed by a PicoPhone-managed attribute.
 
+### Live validation
+
+Mount the engine:
+
+```ruby
+# config/routes.rb
+mount PicoPhone::Rails::Engine, at: "/pico_phone"
+```
+
+The controller is auto-pinned into `importmap-rails` when present, but
+still needs to be registered with your Stimulus application -- pinning
+only makes it importable, the same as any other pinned module:
+
+```js
+// app/javascript/controllers/index.js
+import { application } from "controllers/application"
+import PhoneController from "pico_phone/rails/phone_controller"
+application.register("phone", PhoneController)
+```
+
+Then opt in per field:
+
+```ruby
+<%= f.pico_phone_field :phone, region: "US", live: true %>
+<span data-phone-target="error"></span>
+```
+
+Debounces input and POSTs to the mounted engine, showing the error message
+in a sibling `data-phone-target="error"` element (anywhere under the same
+parent as the field -- `data-controller` sits on the `<input>` itself,
+which can't have descendants, so the target is found via the field's
+parent rather than Stimulus's usual descendant-scoped target lookup)
+while the user types. Never rewrites the field's value while it has
+focus -- only on blur, reformatted to national format if what's there
+parses validly, the same reformat-on-blur behavior as the plain
+(non-`live`) helper.
+
+`ValidationsController` uses your app's normal CSRF protection -- the
+controller reads the token from the page's `<meta name="csrf-token">`
+(rendered by Rails' own `csrf_meta_tags`, already in any standard layout)
+and sends it with every request, no extra setup needed.
+
 ### ActiveJob serializer
 
 ```ruby

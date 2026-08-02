@@ -22,6 +22,18 @@ module PicoPhone
       phone_number.valid? ? phone_number.national : string
     end
 
+    # @param region [String, nil]
+    # @param validate_path [String] the mounted engine's validate endpoint
+    # @return [Hash] Stimulus data attributes for +live:+ validation
+    def self.live_validation_data(region, validate_path)
+      {
+        controller: "phone",
+        action: "input->phone#validate blur->phone#reformat",
+        phone_region_value: region.to_s,
+        phone_url_value: validate_path
+      }
+    end
+
     # Included into ActionView::Base by the railtie once ActionView loads.
     # Adds +pico_phone_field_tag+, a +text_field_tag+-like helper that
     # displays national format for a valid number while leaving the
@@ -39,9 +51,14 @@ module PicoPhone
       # @param name [String, Symbol]
       # @param value [String, PicoPhone::PhoneNumber, nil]
       # @param region [String, nil] ISO 3166-1 alpha-2 region for interpreting +value+ when it's a raw string
+      # @param live [Boolean] wire up debounced validation/reformatting; requires the engine to be mounted
       # @return [String] an HTML-safe +<input type="tel">+ tag
-      def pico_phone_field_tag(name, value = nil, region: nil, **options)
+      def pico_phone_field_tag(name, value = nil, region: nil, live: false, **options)
         display_value = PicoPhone::Rails.phone_field_display_value(value, region)
+        if live
+          data = PicoPhone::Rails.live_validation_data(region, pico_phone_rails.validate_path)
+          options[:data] = data.merge(options[:data] || {})
+        end
         text_field_tag(name, display_value, options.merge(type: "tel"))
       end
     end
@@ -59,10 +76,15 @@ module PicoPhone
       #   raw value when it isn't already a {PicoPhone::PhoneNumber} -- a String is used as-is, a Symbol is
       #   called as an instance method on the form's object, a Proc is called with the object, same resolution
       #   rules as {Extraction.extract_phone_numbers_from} and {PhoneSearchIndex.maintain_phone_search_index}
+      # @param live [Boolean] wire up debounced validation/reformatting; requires the engine to be mounted
       # @return [String] an HTML-safe +<input type="tel">+ tag
-      def pico_phone_field(method, region: nil, **options)
+      def pico_phone_field(method, region: nil, live: false, **options)
         resolved_region = PicoPhone::Rails.resolve_region(region, object)
         display_value = PicoPhone::Rails.phone_field_display_value(object.public_send(method), resolved_region)
+        if live
+          data = PicoPhone::Rails.live_validation_data(resolved_region, @template.pico_phone_rails.validate_path)
+          options[:data] = data.merge(options[:data] || {})
+        end
         text_field(method, options.merge(value: display_value, type: "tel"))
       end
     end

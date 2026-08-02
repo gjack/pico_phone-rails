@@ -16,3 +16,4 @@ require "pico_phone/rails/normalizer"
 require "pico_phone/rails/extraction"
 require "pico_phone/rails/phone_search_index"
 require "pico_phone/rails/railtie" if defined?(Rails::Railtie)
+require "pico_phone/rails/engine" if defined?(Rails::Railtie)
