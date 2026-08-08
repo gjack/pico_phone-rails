@@ -24,12 +24,16 @@ module PicoPhone
 
     # @param region [String, nil]
     # @param validate_path [String] the mounted engine's validate endpoint
+    # @param strict [Boolean] whether a number valid for a different country than +region+
+    #   still counts as invalid (matching a validator that enforces +region:+) or clears
+    #   the error (matching a validator that accepts any valid number)
     # @return [Hash] Stimulus data attributes for +live:+ validation
-    def self.live_validation_data(region, validate_path)
+    def self.live_validation_data(region, validate_path, strict: true)
       {
         controller: "phone",
         action: "input->phone#validate blur->phone#reformat",
         phone_region_value: region.to_s,
+        phone_strict_value: strict,
         phone_url_value: validate_path
       }
     end
@@ -52,11 +56,12 @@ module PicoPhone
       # @param value [String, PicoPhone::PhoneNumber, nil]
       # @param region [String, nil] ISO 3166-1 alpha-2 region for interpreting +value+ when it's a raw string
       # @param live [Boolean] wire up debounced validation/reformatting; requires the engine to be mounted
+      # @param strict [Boolean] see {PicoPhone::Rails.live_validation_data}; only relevant when +live:+ is true
       # @return [String] an HTML-safe +<input type="tel">+ tag
-      def pico_phone_field_tag(name, value = nil, region: nil, live: false, **options)
+      def pico_phone_field_tag(name, value = nil, region: nil, live: false, strict: true, **options)
         display_value = PicoPhone::Rails.phone_field_display_value(value, region)
         if live
-          data = PicoPhone::Rails.live_validation_data(region, pico_phone_rails.validate_path)
+          data = PicoPhone::Rails.live_validation_data(region, pico_phone_rails.validate_path, strict: strict)
           options[:data] = data.merge(options[:data] || {})
         end
         text_field_tag(name, display_value, options.merge(type: "tel"))
@@ -77,12 +82,14 @@ module PicoPhone
       #   called as an instance method on the form's object, a Proc is called with the object, same resolution
       #   rules as {Extraction.extract_phone_numbers_from} and {PhoneSearchIndex.maintain_phone_search_index}
       # @param live [Boolean] wire up debounced validation/reformatting; requires the engine to be mounted
+      # @param strict [Boolean] see {PicoPhone::Rails.live_validation_data}; only relevant when +live:+ is true
       # @return [String] an HTML-safe +<input type="tel">+ tag
-      def pico_phone_field(method, region: nil, live: false, **options)
+      def pico_phone_field(method, region: nil, live: false, strict: true, **options)
         resolved_region = PicoPhone::Rails.resolve_region(region, object)
         display_value = PicoPhone::Rails.phone_field_display_value(object.public_send(method), resolved_region)
         if live
-          data = PicoPhone::Rails.live_validation_data(resolved_region, @template.pico_phone_rails.validate_path)
+          validate_path = @template.pico_phone_rails.validate_path
+          data = PicoPhone::Rails.live_validation_data(resolved_region, validate_path, strict: strict)
           options[:data] = data.merge(options[:data] || {})
         end
         text_field(method, options.merge(value: display_value, type: "tel"))

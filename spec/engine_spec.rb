@@ -48,6 +48,51 @@ RSpec.describe PicoPhone::Rails::Engine do
 
     expect(response["valid"]).to be false
   end
+
+  it "formats a number valid for a different country as international, but keeps it invalid by default (strict)" do
+    response = post_validate(phone: "+44 20 7946 0958", region: "US")
+
+    expect(response).to eq(
+      "valid" => false,
+      "blank" => false,
+      "e164" => "+442079460958",
+      "international" => "+44 20 7946 0958",
+      "message" => "is not a valid phone number"
+    )
+  end
+
+  it "marks a number valid for a different country as valid when strict: false" do
+    response = post_validate(phone: "+44 20 7946 0958", region: "US", strict: false)
+
+    expect(response).to eq(
+      "valid" => true,
+      "blank" => false,
+      "e164" => "+442079460958",
+      "international" => "+44 20 7946 0958"
+    )
+  end
+
+  it "stays invalid and unformatted for ambiguous national-style digits with no country code" do
+    response = post_validate(phone: "020 7946 0958", region: "US")
+
+    expect(response).to eq(
+      "valid" => false,
+      "blank" => false,
+      "message" => "is not a valid phone number"
+    )
+  end
+
+  it "recognizes a foreign number dialed via the region's own IDD exit code, with no +" do
+    response = post_validate(phone: "011 44 20 7946 0958", region: "US")
+
+    expect(response).to eq(
+      "valid" => false,
+      "blank" => false,
+      "e164" => "+442079460958",
+      "international" => "+44 20 7946 0958",
+      "message" => "is not a valid phone number"
+    )
+  end
 end
 
 RSpec.describe "live: true" do
@@ -60,7 +105,15 @@ RSpec.describe "live: true" do
     expect(html).to include('data-controller="phone"')
     expect(html).to include('data-action="input-&gt;phone#validate blur-&gt;phone#reformat"')
     expect(html).to include('data-phone-region-value="US"')
+    expect(html).to include('data-phone-strict-value="true"')
     expect(html).to include('data-phone-url-value="/pico_phone/validate"')
+  end
+
+  it "reflects strict: false when passed to pico_phone_field_tag" do
+    session.get("/live_field_strict_false", params: { value: "5102745656", region: "US" })
+    html = session.response.body
+
+    expect(html).to include('data-phone-strict-value="false"')
   end
 
   it "lets a caller-supplied data: win on key conflict" do
