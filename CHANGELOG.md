@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 - 2026-08-08
+
+- Live validation now reformats a number valid for a *different* country than the field's `region:` (one carrying its own `+` or IDD country signal, e.g. `"+44 20 7946 0958"` or `"011 44 20 7946 0958"` dialed out of a US-configured field) to international format on blur, instead of leaving it as raw, unrecognized digits. A bare national-style number with no country signal of its own is left untouched -- there's no reliable way to tell which of several countries it might belong to from the digits alone.
+- Add `strict:` to `pico_phone_field_tag`/`f.pico_phone_field` (default `true`), controlling whether a cross-country match also clears the live error state, independent of the reformatting: `strict: true` matches a `PhoneValidator` that enforces `region:`, `strict: false` matches one that accepts any valid country.
+- Bump `json` to 2.21.2, fixing a low-severity heap-use-after-free in `JSON::ResumableParser#partial_value` present in 2.20.0-2.21.1.
+
 ## 0.5.0 - 2026-08-02
 
 - Add live phone-field validation: mount `PicoPhone::Rails::Engine` and pass `live: true` to `pico_phone_field_tag`/`f.pico_phone_field` for a Stimulus controller that debounces input, shows an inline error via a JSON endpoint, and reformats the field to national format on blur. Ships as a plain ES module, auto-pinned into `importmap-rails` when present -- no build step, no hard Turbo/Stimulus dependency. Uses the host app's normal CSRF protection; the controller reads the token from the page and sends it with every request.
