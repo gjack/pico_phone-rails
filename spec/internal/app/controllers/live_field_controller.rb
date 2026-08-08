@@ -21,4 +21,11 @@ class LiveFieldController < ActionController::Base
       <% end %>
     ERB
   end
+
+  def show_strict_false
+    render inline: <<~ERB
+      <%= pico_phone_field_tag(:phone, params[:value], region: params[:region], live: true,
+            strict: false) %>
+    ERB
+  end
 end
