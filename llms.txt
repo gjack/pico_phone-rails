@@ -1,15 +1,20 @@
 # pico_phone-rails
 
-> Rails integration for the pico_phone gem: an ActiveRecord attribute type, an ActiveModel validator, a before-validation normalizer, and an ActiveJob serializer for phone numbers.
+> Rails integration for the pico_phone gem: an ActiveRecord attribute type, an ActiveModel validator, a before-validation normalizer, free-text phone number extraction (with optional cross-record search), a same-table phone search index, form field helpers with live Stimulus-driven validation, and an ActiveJob serializer for phone numbers.
 
 Core API surface:
 
 - `validates :phone, phone: { region:, allow_blank:, possible:, message: }` — `PhoneValidator`, a top-level `ActiveModel::EachValidator` (not namespaced, so ActiveModel's `"#{key.camelize}Validator"` lookup resolves it).
 - `attribute :phone, :phone_number, region: "US"` — `PicoPhone::Rails::Type`, an `ActiveModel::Type::Value` registered as `:phone_number`. Casts a stored string to a `PicoPhone::PhoneNumber` on read, serializes back to E.164 (or the original string, if invalid) on write.
 - `normalize_phone :phone, region: "US"` — `PicoPhone::Rails::Normalizer`, a `before_validation` callback that rewrites the attribute to E.164 when it parses as valid.
+- `extract_phone_numbers_from :body, region:, persist: false` — scans a free-text column for phone numbers of any format, exposing `#extracted_phone_numbers`/`#<attribute>_with_phones_redacted`. Also available standalone via `PicoPhone::Rails.extract_phone_numbers`/`.redact_phone_numbers`, no ActiveRecord model required. `persist: true` (plus `rails generate pico_phone:rails:extracted_phone_numbers`) keeps a searchable child table in sync, adding `.containing_phone_number`/`.phone_number_starting_with` class methods.
+- `maintain_phone_search_index :number, region:, columns:` — for a table that's already one-row-per-phone-number: keeps configurable sibling search columns (`e164`, `national_digits`, `reversed_digits`, `region`) in sync via `before_save`, with `#sync_phone_search_index!` for backfilling and `.phone_number_index_matching`/`.phone_number_index_starting_with`/`.phone_number_index_ending_with` for querying. `rails generate pico_phone:rails:phone_number` scaffolds a fresh table + model.
+- `pico_phone_field_tag`/`f.pico_phone_field :phone, region:, live:, strict:` — renders an `<input type="tel">` in national format for a valid number, raw input otherwise. `live: true` (with `mount PicoPhone::Rails::Engine`) wires up a debounced Stimulus controller that validates and reformats on blur: national format for a same-region match, international format for a number valid in a different country (one that carries its own `+`/IDD country signal), left as typed if the input carries no country signal at all. `strict:` (default `true`) controls whether a cross-country match also clears the live error state — keep it in sync with whether the model's own `PhoneValidator` sets `region:`.
 - `MyJob.perform_later(phone: PicoPhone.parse("+15102745656", "US"))` — `PicoPhone::Rails::Serializers::PhoneNumberSerializer`, an `ActiveJob::Serializers::ObjectSerializer` so a `PhoneNumber` survives being passed directly as a job argument.
 
-All four integrations are wired up automatically by `PicoPhone::Rails::Railtie` via `ActiveSupport.on_load` hooks, and stay soft dependencies — the ActiveRecord and ActiveJob pieces only activate if the host app actually loads those Rails components.
+`region:` across all of the above accepts a String, a Symbol (called as an instance method on the record/form object), or a Proc (called with it), resolved per record/render for multi-tenant/multi-region apps.
+
+Every integration is wired up automatically by `PicoPhone::Rails::Railtie` via `ActiveSupport.on_load` hooks, and stays a soft dependency — the ActiveRecord/ActionView/ActiveJob pieces only activate if the host app actually loads those Rails components.
 
 ## Docs
 
