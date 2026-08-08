@@ -239,9 +239,37 @@ parent as the field -- `data-controller` sits on the `<input>` itself,
 which can't have descendants, so the target is found via the field's
 parent rather than Stimulus's usual descendant-scoped target lookup)
 while the user types. Never rewrites the field's value while it has
-focus -- only on blur, reformatted to national format if what's there
-parses validly, the same reformat-on-blur behavior as the plain
-(non-`live`) helper.
+focus -- only on blur.
+
+On blur, a number that matches `region:` reformats to national format, the
+same as the plain (non-`live`) helper. A number that's valid for a
+*different* country -- one that carries its own explicit signal, a leading
+`+` or a recognized IDD exit code (e.g. `"011 44 20 7946 0958"` dialed out
+of a US-configured field) -- reformats to **international** format instead,
+so it's clearly shown as a foreign number rather than misleadingly bare
+national-style digits. A bare national-style number with no country signal
+of its own (e.g. `"020 7946 0958"` typed into a `region: "US"` field) is
+left exactly as typed -- there's no reliable way to tell which of several
+countries it might belong to from the digits alone, and guessing wrong
+would mean showing the user a different, real phone number than the one
+they meant.
+
+Whether a cross-country match also clears the error is controlled by
+`strict:`:
+
+```ruby
+<%= f.pico_phone_field :phone, region: "US", live: true, strict: false %>
+```
+
+- `strict: true` (default) -- only a same-region match clears the error.
+  A number valid for a different country still reformats to international,
+  but the error stays, matching a validator that enforces `region:`.
+- `strict: false` -- any globally-valid number clears the error, matching
+  a validator that accepts any country (no `region:` option, or
+  `possible:` with no region constraint). **Keep `strict:` in sync with
+  whether the model's own `PhoneValidator` sets `region:`** -- pairing
+  `strict: false` here with a validator that still enforces `region:`
+  shows no error live, but the record still fails validation on submit.
 
 `ValidationsController` uses your app's normal CSRF protection -- the
 controller reads the token from the page's `<meta name="csrf-token">`
